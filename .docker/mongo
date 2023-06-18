@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -gt 0 ]; then
+    if [ "$1" = "start" ]; then
+        echo 'Inicializando execução...'
+        docker run --name mongo_container -p 27017:27017 -v "$(pwd)/db:/data/db" -d mongodb
+    fi
+    if [ "$1" = "stop" ]; then
+        echo 'Parando execução...'
+        docker stop mongo_container
+        docker rm mongo_container
+    fi
+else
+    echo 'Costruindo imagem mongo...'
+    # Construa a imagem do mongo, dando a imagem o apelido de "mongodb"
+    docker build -t mongodb .
+fi
