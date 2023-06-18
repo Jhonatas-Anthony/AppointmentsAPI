@@ -23,4 +23,4 @@ As informações de conexão com o banco de dados estão no arquivo db.js
 
 Dentro da pasta app defini os controllers que estão responsáveis por criar, ver, editar e deletar (CRUD) e também os models que carregam a estrutura de cada tabela. 
 
-Puxando esses arquivos no index.js e rodando o comando ```node index.js``` conseguimos ter acesso ao app na rota 127.0.0.1:3000
+Puxando esses arquivos no index.js e rodando o comando ```node index.js``` conseguimos ter acesso ao app na rota [local](127.0.0.1:3000)
