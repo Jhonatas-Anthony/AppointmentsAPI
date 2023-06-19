@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <table id="horariosTable">
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>Reservado por</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- As linhas dos horários serão adicionadas dinamicamente usando JavaScript -->
+    </tbody>
+  </table>
+  <script>
+
+    function goToAgendamento(hora) {
+      const newDate = new Date
+      const y = newDate.getFullYear()
+      const m = newDate.getMonth() + 1
+      const d = newDate.getDate()
+      const today = `${d}-${m}-${y}`
+      // Redirecionar para a tela de agendamento, passando o horário como parâmetro
+      window.location.href = `/schedule?date=${today}&hour=${hora}`;
+    }
+
+    fetch('/time/show')
+      .then(response => response.json())
+      .then(timeT => {
+        const tbody = document.querySelector('tbody')
+
+        timeT.forEach(hour => {
+          const row = document.createElement('tr')
+          const cellHour = document.createElement('td')
+          const btn = document.createElement('button')
+          const reserva = document.createElement('td')
+
+          btn.textContent = 'Reservar este horário'
+          btn.addEventListener('click', () => {
+            goToAgendamento(hour.time);
+          });
+
+          cellHour.textContent = hour.time + ":00"
+          reserva.textContent = hour.user ? hour.user.name : 'N/A'
+          row.appendChild(cellHour)
+          row.appendChild(reserva)
+          row.appendChild(btn)
+
+          tbody.appendChild(row)
+        });
+
+
+
+      }).catch(error => {
+        console.error('Erro ao carregar os horários:', error);
+      });
+  </script>
+</body>
+
+</html>

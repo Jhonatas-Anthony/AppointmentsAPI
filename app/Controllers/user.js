@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const User = require('../Models/user');
+const jwt = require('jsonwebtoken');
 
 const userRouter = express.Router();
 
@@ -29,10 +30,12 @@ userRouter.post('/signup', async (req, res) => {
             password: hashedPassword,
         });
 
+        jwt.sign({ userId: newUser._id }, 'segredo');
+
         // Salvar o usuário no banco de dados
         await newUser.save();
 
-        res.status(201).json({ message: 'Usuário cadastrado com sucesso' });
+        res.status(201).json({ message: 'Usuário cadastrado com sucesso'});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao cadastrar o usuário' });
@@ -42,18 +45,20 @@ userRouter.post('/signup', async (req, res) => {
 userRouter.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-
+        console.log(User)
         // Verificar se o usuário existe com o mesmo email
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: 'Credenciais inválidas' });
+            return res.status(400).json({ message: 'Email inválido' });
         }
 
         // Verificar se a senha é válida
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Credenciais inválidas' });
+            return res.status(400).json({ message: 'Senha incorreta' });
         }
+
+        jwt.sign({ userId: user._id }, 'segredo');
 
         res.status(200).json({ message: 'Login realizado com sucesso' });
     } catch (error) {
