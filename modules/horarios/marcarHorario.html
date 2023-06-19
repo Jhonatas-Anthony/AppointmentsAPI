@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reservar Horário</title>
+  <style>
+    /* Estilos CSS */
+    /* ... */
+  </style>
+</head>
+<body>
+  <h1>Detalhes do Horário</h1>
+  <div>
+    <label>Hora:</label>
+    <span id="hora"></span>
+  </div>
+  <div>
+    <label>Status:</label>
+    <span id="status"></span>
+  </div>
+  <div>
+    <label>Reservado por:</label>
+    <span id="reservadoPor"></span>
+  </div>
+  <button id="reservarBtn">Reservar</button>
+
+  <script>
+    // Código JavaScript para exibir detalhes do horário e permitir a reserva
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const horarioId = urlParams.get('hora');
+
+    console.log(horarioId)
+
+    const horaSpan = document.getElementById('hora');
+    const statusSpan = document.getElementById('status');
+    const reservadoPorSpan = document.getElementById('reservadoPor');
+    const reservarBtn = document.getElementById('reservarBtn');
+
+    fetch(`/timeSlot/horarios/${horarioId}`)
+      .then(response => response.json())
+      .then(horario => {
+        horaSpan.textContent = horario.hora;
+        statusSpan.textContent = horario.disponivel ? 'Disponível' : 'Não disponível';
+        reservadoPorSpan.textContent = horario.usuario ? horario.usuario.nome : 'N/A';
+
+        if (horario.disponivel) {
+          reservarBtn.addEventListener('click', () => {
+            // Aqui você pode adicionar a lógica para fazer a reserva do horário
+            // por meio de uma requisição PUT para /horarios/:id
+            fazerReserva(horarioId);
+          });
+        } else {
+          reservarBtn.disabled = true;
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao carregar detalhes do horário:', error);
+      });
+
+    // Função para fazer a reserva do horário
+    function fazerReserva(horarioId) {
+      // Aqui você pode adicionar a lógica para fazer a reserva do horário
+      // por meio de uma requisição PUT para /horarios/:id
+      fetch(`/horarios/${horarioId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reservado: true })
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Aqui você pode adicionar a lógica de sucesso da reserva
+          console.log('Horário reservado com sucesso!');
+        })
+        .catch(error => {
+          console.error('Erro ao fazer a reserva:', error);
+        });
+    }
+  </script>
+</body>
+</html>

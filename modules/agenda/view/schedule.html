@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <body>
+        <h1>Detalhes do Horário</h1>
+        <div>
+            <p>O horário escolhido foi o das <span id="hora"></span> horas, você deve aparecer até as <span id="horamin"></span> para não perder a vaga</p>    
+        </div>
+
+        <button id="reservarBtn">Reservar</button>
+
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const hour = urlParams.get('hour')
+            const date = urlParams.get('date')
+            console.log(hour, date)
+
+            fetch(`/time/view/${date}/${hour}`)
+                .then(response => response.json())
+                .then(timeT => {
+                    const hora = document.querySelector('span#hora')
+                    const horamin = document.querySelector('span#horamin')
+                    hora.textContent = timeT.time + ":00"
+                    horamin.textContent = timeT.time + ":30"
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar os horários:', error);
+                })
+        </script>
+    </body>
+
+</html>
