@@ -2,8 +2,14 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const User = require('../Models/user');
 const jwt = require('jsonwebtoken');
+//const cookieParser = require('cookie-parser');
 
 const userRouter = express.Router();
+const signToken = id => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE
+    })
+}
 
 userRouter.post('/signup', async (req, res) => {
     try {
@@ -29,8 +35,6 @@ userRouter.post('/signup', async (req, res) => {
             email,
             password: hashedPassword,
         });
-
-        jwt.sign({ userId: newUser._id }, 'segredo');
 
         // Salvar o usuário no banco de dados
         await newUser.save();
@@ -58,9 +62,10 @@ userRouter.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Senha incorreta' });
         }
 
-        jwt.sign({ userId: user._id }, 'segredo');
+        const token = signToken(user._id)
+        res.cookie('token', token, { httpOnly: true });
+        res.status(200).json({ message: 'Login bem-sucedido.', token});
 
-        res.status(200).json({ message: 'Login realizado com sucesso' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao realizar o login' });
