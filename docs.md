@@ -1,4 +1,4 @@
-Estou começando esse projeto com express e mongodb, onde farei um sistema de agenda de horários para um salão, a proposta desse sistema é que o usuário possa escolher um horário disponível no dia pra si, sem precisar depender do tempo de resposta do  dono do salão. 
+O intuito deste projeto é criar uma API de agendamento de horários para um salão, onde o usuário vai poder escolher o horário que quiser dentre os disponíveis. 
 
 Primeiro, pensando nas funcionalidades, irei fazer um cadastro simples de usuário, e para isso irei iniciar o projeto e instalar as dependências;
 ```bash
@@ -8,13 +8,14 @@ npm init -y
 npm install express mongoose bcrypt 
 ```
 
-O bcrypt serve para hash de senha aumentando a segurança.
+O bcrypt serve para hash de senha aumentando a segurança, pois invés de salvar a senha como ela é, vai salvar um hash da senha de acordo com uma seed.
 
 Para não precisar instalar os drivers do mongo na máquina, usarei o docker para suprir essa finalidade. 
 
 Para rodar o driver do mongo entre na pasta .docker, e dê as permissões para o arquivo mongo - ```chmod 777 mongo```
 
 Para iniciar o driver use: ```./mongo start```
+
 Para parar o driver use: ```./mongo stop```
 
 Com isso, já conseguimos começar o projeto. 
@@ -24,3 +25,15 @@ As informações de conexão com o banco de dados estão no arquivo db.js
 Dentro da pasta app defini os controllers que estão responsáveis por criar, ver, editar e deletar (CRUD) e também os models que carregam a estrutura de cada tabela. 
 
 Puxando esses arquivos no index.js e rodando o comando ```node index.js``` conseguimos ter acesso ao app na rota [local](127.0.0.1:3000)
+
+Porém, o nodemon está sendo usado para que o servidor reinicie automaticamente, invés do comanto anterior use ```npm run dev```.
+
+## Modulo de usuários
+Nesse primeiro momento julguei necessário que o usuário tivesse apenas nome, e-mail e senha, porém, futuramente pode ser necessário que o usuário tenha informações bancárias ou algumas outras que sigam a regra do negócio que ainda não foi definida totalmente. 
+
+## Modulo de horários
+Nesse primeiro momento, para facilitar o trabalho, estou considerando que o usuário conseguirá visualizar apenas os horários referentes ao dia atual. Quando o usuário entrar na tela de visualização de horários, o backend vai verificar se já existem dados referentes ao dia atual, se não existir, o sistema vai popular o backend automaticamente e o usuário não sentirá isso. 
+Futuramente, um input tipo date pode ser incluído para que o usuário escolha qualquer dia que quiser, porém, antes de lançar essa feature, quero ter certeza que o sistema está funcionando. 
+Na tabela timeTable, estou considerando que não podem haver dois horários para o mesmo dia, então considerei uma string time(hora) e date(data) como chave composta, e assim, tudo que devo fazer, é dar um put com o id do usuário logado. 
+
+
