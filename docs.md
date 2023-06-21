@@ -11,14 +11,29 @@ npm install express mongoose bcrypt
 O bcrypt serve para hash de senha aumentando a segurança, pois invés de salvar a senha como ela é, vai salvar um hash da senha de acordo com uma seed.
 
 Para não precisar instalar os drivers do mongo na máquina, usarei o docker para suprir essa finalidade. 
+---
 
+## Importante: Primeiro acesso
 Para rodar o driver do mongo entre na pasta .docker, e dê as permissões para o arquivo mongo - ```chmod 777 mongo```
 
 Para iniciar o driver use: ```./mongo start```
 
 Para parar o driver use: ```./mongo stop```
 
-Com isso, já conseguimos começar o projeto. 
+Inicie o projeto com o comando ```npm run dev``` - O nodemon está sendo responsável por reiniciar o projeto automaticamente.
+
+Quando iniciar o projeto se dirija até a rota responsável por [popular](127.0.0.1:3000/user/populate) o banco de dados.
+
+Aqui estão os dados dos usuários de teste: 
+| Email  | Senha |
+| ------------- | ------------- |
+|  jhonatas@gmail.com | 123   |
+| adm@gmail.com  | 123   |
+| sub@gmail.com  | 123   |
+| grosso@gmail.com  | 123   |
+| lex@gmail.com  | 123   |
+
+---
 
 As informações de conexão com o banco de dados estão no arquivo db.js
 
@@ -26,7 +41,7 @@ Dentro da pasta app defini os controllers que estão responsáveis por criar, ve
 
 Puxando esses arquivos no index.js e rodando o comando ```node index.js``` conseguimos ter acesso ao app na rota [local](127.0.0.1:3000)
 
-O nodemon está sendo usado para que o servidor reinicie automaticamente, invés do comanto anterior use ```npm run dev```.
+O nodemon está sendo usado para que o servidor reinicie automaticamente, invés do comanto anterior use 
 
 ## Modulo de usuários
 Nesse primeiro momento julguei necessário que o usuário tivesse apenas nome, e-mail e senha, porém, futuramente pode ser necessário que o usuário tenha informações bancárias ou algumas outras que sigam a regra do negócio que ainda não foi definida totalmente. 

@@ -39,7 +39,7 @@ userRouter.post('/signup', async (req, res) => {
         // Salvar o usuário no banco de dados
         await newUser.save();
 
-        res.status(201).json({ message: 'Usuário cadastrado com sucesso'});
+        res.status(201).redirect('/login');
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao cadastrar o usuário' });
@@ -64,12 +64,65 @@ userRouter.post('/login', async (req, res) => {
 
         const token = signToken(user._id)
         res.cookie('token', token, { httpOnly: true });
-        res.status(200).json({ message: 'Login bem-sucedido.', token});
+        res.status(200).redirect('/');
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao realizar o login' });
     }
 });
+
+userRouter.get('/logout', async (req, res) => {
+    res.cookie('token', '', { expires: new Date(0) })
+    res.redirect('/login')
+})
+
+userRouter.get('/checkAuth', async (req, res) => {
+    try {
+        const token = req.headers.cookie.split('token=')[1]
+  
+      if (!token) {
+        // Se o token não estiver presente, o usuário não está autenticado
+        return res.json({ isAuthenticated: false });
+      }
+  
+      try {
+        // Verifica se o token é válido
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
+        // Verifica se o usuário existe no banco de dados
+        const user = await User.findById(decoded.id);
+        if (!user) {
+          // Se o usuário não existir
+          return res.json({ isAuthenticated: false });
+        }
+  
+        // Se o usuário existir
+        return res.json({ isAuthenticated: true });
+      } catch (error) {
+        return res.json({ isAuthenticated: false });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao verificar a autenticação do usuário' });
+    }
+  });
+
+userRouter.get('/populate', async (req, res) => {
+    const data = [
+        { name: 'Jhonatas Anthony', email: 'jhonatas@gmail.com', password: await bcrypt.hash('123', 10) },
+        { name: 'Garrincha', email: 'adm@gmail.com', password: await bcrypt.hash('123', 10)},
+        { name: 'Luca', email: 'sub@gmail.com', password: await bcrypt.hash('123', 10) },
+        { name: 'Caruso', email: 'grosso@gmail.com', password: await bcrypt.hash('123', 10) },
+        { name: 'Lilica', email: 'lex@gmail.com', password: await bcrypt.hash('123', 10) }
+    ]
+    try {
+        const users = await User.insertMany(data)
+        res.status(200).json({ message: 'banco populado com sucesso', users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao popular banco' })
+    }
+})
 
 module.exports = userRouter;
