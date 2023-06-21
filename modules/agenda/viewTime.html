@@ -13,6 +13,8 @@
       <tr>
         <th>Hora</th>
         <th>Reservado por</th>
+        <!-- <input type="date" name="" id="da">
+        <button id="ver" type="button">ver</button> -->
       </tr>
     </thead>
     <tbody>
@@ -20,22 +22,34 @@
     </tbody>
   </table>
   <script>
+    /* let dat = document.querySelector('input#da')
+    let but = document.querySelector('button#ver')
+    but.addEventListener('click', () => {
+      console.log(dat.value)
+    }); */
 
     function goToAgendamento(hora) {
       const newDate = new Date
       const y = newDate.getFullYear()
       const m = newDate.getMonth() + 1
       const d = newDate.getDate()
-      const today = `${d}-${m}-${y}`
+      const today = `${y}-${m}-${d}`
       // Redirecionar para a tela de agendamento, passando o horário como parâmetro
       window.location.href = `/schedule?date=${today}&hour=${hora}`;
     }
 
-    fetch('/time/show')
+    fetch('/time/createMany')
+      .then(response => response.json())
+      .then(timeT => {
+        
+      }).catch(error => {
+        console.error('Erro ao carregar os horários:', error);
+      });
+
+     fetch('/time/show')
       .then(response => response.json())
       .then(timeT => {
         const tbody = document.querySelector('tbody')
-
         timeT.forEach(hour => {
           const row = document.createElement('tr')
           const cellHour = document.createElement('td')
@@ -49,18 +63,16 @@
 
           cellHour.textContent = hour.time + ":00"
           reserva.textContent = hour.user ? hour.user.name : 'N/A'
+          console.log(hour.user)
           row.appendChild(cellHour)
           row.appendChild(reserva)
           row.appendChild(btn)
 
           tbody.appendChild(row)
         });
+      })
 
-
-
-      }).catch(error => {
-        console.error('Erro ao carregar os horários:', error);
-      });
+    
   </script>
 </body>
 

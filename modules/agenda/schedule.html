@@ -12,16 +12,35 @@
     <body>
         <h1>Detalhes do Horário</h1>
         <div>
-            <p>O horário escolhido foi o das <span id="hora"></span> horas, você deve aparecer até as <span id="horamin"></span> para não perder a vaga</p>    
+            <p>O horário escolhido foi o das <span id="hora"></span> horas, você deve aparecer até as <span
+                    id="horamin"></span> para não perder a vaga</p>
         </div>
-
         <button id="reservarBtn">Reservar</button>
+
+
 
         <script>
             const urlParams = new URLSearchParams(window.location.search);
             const hour = urlParams.get('hour')
             const date = urlParams.get('date')
-            console.log(hour, date)
+
+            const reservarBtn = document.getElementById('reservarBtn');
+            reservarBtn.addEventListener('click', reservarHorario);
+
+            const requestOptions = {
+                method: 'PUT'
+            };
+            function reservarHorario() {
+                fetch(`/time/put/${date}/${hour}`, requestOptions).then(response => response.json())
+                    .then(data => {
+                        
+                    })
+                    .catch(error => {
+                        console.error('Erro ao efetuar reserva:', error);
+                    });
+                    alert("Horário reservado com sucesso")
+                    window.location.href = '/timetable'
+            }
 
             fetch(`/time/view/${date}/${hour}`)
                 .then(response => response.json())
@@ -29,7 +48,7 @@
                     const hora = document.querySelector('span#hora')
                     const horamin = document.querySelector('span#horamin')
                     hora.textContent = timeT.time + ":00"
-                    horamin.textContent = timeT.time + ":30"
+                    horamin.textContent = timeT.time + ":20"
                 })
                 .catch(error => {
                     console.error('Erro ao carregar os horários:', error);

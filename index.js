@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 });
 
 // Rota para exibir o formulário de cadastro
-app.get('/cadastro', (req, res) => {
+app.get('/signup', (req, res) => {
     res.sendFile(path.join(__dirname, 'modules', 'user/cadastro.html'));
 });
 
@@ -34,16 +34,12 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'modules', 'user/login.html'));
 });
 
-app.get('logout', (req, res) => {
-    res.cookie('token', '', { expires: new Date(0) });
-})
-
 app.use('/timetable', (req, res) => {
-    res.sendFile(path.join(__dirname, 'modules', 'agenda/view/viewTime.html'))
+    res.sendFile(path.join(__dirname, 'modules', 'agenda/viewTime.html'))
 })
 
 app.use('/schedule', authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, 'modules', 'agenda/view/schedule.html'))
+    res.sendFile(path.join(__dirname, 'modules', 'agenda/schedule.html'))
 })
 
 const port = 3000;
