@@ -2,28 +2,36 @@
 
 O intuito deste projeto é criar uma API de agendamento de horários para um salão, onde o usuário vai poder escolher o horário que quiser dentre os disponíveis. 
 
+## Documentação
+
 Primeiro, pensando nas funcionalidades, irei fazer um cadastro simples de usuário, e para isso irei iniciar o projeto e instalar as dependências;
 ```bash
 npm init -y
 ```
 ```bash
-npm install express mongoose bcrypt 
+npm install express mongoose bcrypt dotenv jsonwebtoken nodemon cookie-parser 
 ```
 
 O bcrypt serve para hash de senha aumentando a segurança, pois invés de salvar a senha como ela é, vai salvar um hash da senha de acordo com uma seed.
 
-Para não precisar instalar os drivers do mongo na máquina, usarei o docker para suprir essa finalidade.
+O cookie-parser serve para receber dados através de cookies.
+
+O jsonwebtoken serve para gerar um tokens de autenticação local para os usuários.
+
+O dotenv serve para integrar o arquivo .env nas requisições, guardando variáveis locais e aumentando a segurança da aplicação.
+
+Para não precisar instalar os drivers do mongo na máquina, usarei o docker para suprir essa finalidade. 
 
 ---
 
-## Importante: Primeiro acesso
-Para rodar o driver do mongo entre na pasta .docker, e dê as permissões para o arquivo mongo - ```chmod 777 mongo```
+# Importante: Primeiro acesso
+Para rodar o driver do mongo entre no diretório .docker, e dê as permissões para o arquivo mongo - ```chmod 777 mongo```
 
 Para iniciar o driver use: ```./mongo start```
 
 Para parar o driver use: ```./mongo stop```
 
-Inicie o projeto com o comando ```npm run dev``` - O nodemon está sendo responsável por reiniciar o projeto automaticamente.
+Inicie o projeto com o comando ```npm run dev``` - O nodemon está sendo responsável por reiniciar o projeto automaticamente. Agora, conseguimos ter acesso ao app na rota [local](127.0.0.1:3000).
 
 Quando iniciar o projeto se dirija até a rota responsável por [popular](127.0.0.1:3000/user/populate) o banco de dados.
 
@@ -38,13 +46,9 @@ Aqui estão os dados dos usuários de teste:
 
 ---
 
-As informações de conexão com o banco de dados estão no arquivo db.js
+As informações de conexão com o banco de dados estão no arquivo db.js.
 
-Dentro da pasta app defini os controllers que estão responsáveis por criar, ver, editar e deletar (CRUD) e também os models que carregam a estrutura de cada tabela. 
-
-Puxando esses arquivos no index.js e rodando o comando ```node index.js``` conseguimos ter acesso ao app na rota [local](127.0.0.1:3000)
-
-O nodemon está sendo usado para que o servidor reinicie automaticamente, invés do comanto anterior use 
+Dentro da pasta app defini os controllers que estão responsáveis por criar, ver, editar e deletar (CRUD) e também os models que carregam a estrutura para criar cada tabela. 
 
 ## Modulo de usuários
 Nesse primeiro momento julguei necessário que o usuário tivesse apenas nome, e-mail e senha, porém, futuramente pode ser necessário que o usuário tenha informações bancárias ou algumas outras que sigam a regra do negócio que ainda não foi definida totalmente. 
@@ -58,6 +62,6 @@ Com tudo funcionando, preciso definir como funcionará a autenticação de usuá
 
 Estarei usando o cookie parser e o JsonWebToken(JWT), o JWT é usado para autenticação entre duas partes por meio de um token assinado que autentica uma requisição web. Esse token é um código em Base64 que armazena objetos JSON com os dados que permitem a autenticação da requisição. O Cookie parser vai salvar esse token no header da requisição no local storage. Então, se esse token existir, é por que existe alguém logado, quando o usuário clica em 'deslogar' o token é apagado, e dessa forma não tem como autenticar, logo o usuário é efetivamente deslogado. 
 
-Agora, podemos desconstruir esse token e verificar qual o usuário logado com ele. 
+Dessa forma, podemos desconstruir esse token e verificar qual o é o id de usuário retornado e vendo qual é o usuário autenticado. 
 
 
