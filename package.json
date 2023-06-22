@@ -6,9 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "devstyle": "nodemon --watch scss --exec \"npm run style \"",
-    "style": "node-sass scss -o public"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",

@@ -79,39 +79,44 @@ userRouter.get('/logout', async (req, res) => {
 
 userRouter.get('/checkAuth', async (req, res) => {
     try {
-        const token = req.headers.cookie.split('token=')[1]
-  
-      if (!token) {
-        // Se o token não estiver presente, o usuário não está autenticado
-        return res.json({ isAuthenticated: false });
-      }
-  
-      try {
-        // Verifica se o token é válido
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  
-        // Verifica se o usuário existe no banco de dados
-        const user = await User.findById(decoded.id);
-        if (!user) {
-          // Se o usuário não existir
-          return res.json({ isAuthenticated: false });
+        if(req.header.cookie === undefined){
+            return res.json({ isAuthenticated: false });
         }
-  
-        // Se o usuário existir
-        return res.json({ isAuthenticated: true });
-      } catch (error) {
-        return res.json({ isAuthenticated: false });
-      }
+        else {
+            const token = req.headers.cookie.split('token=')[1]
+        }
+        console.log(token)
+        if (!token) {
+            // Se o token não estiver presente, o usuário não está autenticado
+            return res.json({ isAuthenticated: false });
+        }
+
+        try {
+            // Verifica se o token é válido
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // Verifica se o usuário existe no banco de dados
+            const user = await User.findById(decoded.id);
+            if (!user) {
+                // Se o usuário não existir
+                return res.json({ isAuthenticated: false });
+            }
+
+            // Se o usuário existir
+            return res.json({ isAuthenticated: true });
+        } catch (error) {
+            return res.json({ isAuthenticated: false });
+        }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Erro ao verificar a autenticação do usuário' });
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao verificar a autenticação do usuário' });
     }
-  });
+});
 
 userRouter.get('/populate', async (req, res) => {
     const data = [
         { name: 'Jhonatas Anthony', email: 'jhonatas@gmail.com', password: await bcrypt.hash('123', 10) },
-        { name: 'Garrincha', email: 'adm@gmail.com', password: await bcrypt.hash('123', 10)},
+        { name: 'Garrincha', email: 'adm@gmail.com', password: await bcrypt.hash('123', 10) },
         { name: 'Luca', email: 'sub@gmail.com', password: await bcrypt.hash('123', 10) },
         { name: 'Caruso', email: 'grosso@gmail.com', password: await bcrypt.hash('123', 10) },
         { name: 'Lilica', email: 'lex@gmail.com', password: await bcrypt.hash('123', 10) }

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+  console.log('Tentando conectar com o banco de dados');  
   try {
     await mongoose.connect('mongodb://localhost/beauty-saloon', {
       useNewUrlParser: true,
