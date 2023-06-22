@@ -78,13 +78,14 @@ userRouter.get('/logout', async (req, res) => {
 })
 
 userRouter.get('/checkAuth', async (req, res) => {
+    if(req.headers.cookie == undefined){
+        return res.json({ isAuthenticated: false });
+    }
     try {
-        if(req.header.cookie === undefined){
-            return res.json({ isAuthenticated: false });
-        }
-        else {
-            const token = req.headers.cookie.split('token=')[1]
-        }
+
+
+        const token = req.headers.cookie.split('token=')[1]
+
         console.log(token)
         if (!token) {
             // Se o token não estiver presente, o usuário não está autenticado
