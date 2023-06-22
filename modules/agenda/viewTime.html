@@ -5,22 +5,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
-  <table id="horariosTable">
-    <thead>
-      <tr>
-        <th>Hora</th>
-        <th>Reservado por</th>
-        <!-- <input type="date" name="" id="da">
+  <header>
+    <h1>Horários de hoje</h1>
+  </header>
+  <main>
+    <table id="horariosTable" class="table">
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Reservado por</th>
+          <th></th>
+          <!-- <input type="date" name="" id="da">
         <button id="ver" type="button">ver</button> -->
-      </tr>
-    </thead>
-    <tbody>
-      <!-- As linhas dos horários serão adicionadas dinamicamente usando JavaScript -->
-    </tbody>
-  </table>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- As linhas dos horários serão adicionadas dinamicamente usando JavaScript -->
+      </tbody>
+    </table>
+  </main>
+
   <script>
     /* let dat = document.querySelector('input#da')
     let but = document.querySelector('button#ver')
@@ -33,7 +41,7 @@
       const y = newDate.getFullYear()
       const m = newDate.getMonth() + 1
       const d = newDate.getDate()
-      const today = `${y}-${m}-${d}`
+      const today = `${y}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`
       // Redirecionar para a tela de agendamento, passando o horário como parâmetro
       window.location.href = `/schedule?date=${today}&hour=${hora}`;
     }
@@ -41,19 +49,20 @@
     fetch('/time/createMany')
       .then(response => response.json())
       .then(timeT => {
-        
       }).catch(error => {
         console.error('Erro ao carregar os horários:', error);
       });
 
-     fetch('/time/show')
+    fetch('/time/show')
       .then(response => response.json())
       .then(timeT => {
         const tbody = document.querySelector('tbody')
         timeT.forEach(hour => {
           const row = document.createElement('tr')
           const cellHour = document.createElement('td')
+          const cellBtn = document.createElement('td')
           const btn = document.createElement('button')
+          btn.setAttribute('id', 'reservaBtn')
           const reserva = document.createElement('td')
 
           btn.textContent = 'Reservar este horário'
@@ -63,16 +72,17 @@
 
           cellHour.textContent = hour.time + ":00"
           reserva.textContent = hour.user ? hour.user.name : 'N/A'
-          console.log(hour.user)
+          cellBtn.appendChild(btn)
+
           row.appendChild(cellHour)
           row.appendChild(reserva)
-          row.appendChild(btn)
+          row.appendChild(cellBtn)
 
           tbody.appendChild(row)
         });
       })
 
-    
+
   </script>
 </body>
 

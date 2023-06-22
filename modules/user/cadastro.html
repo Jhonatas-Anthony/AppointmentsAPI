@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Cadastro de Usuário</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
+
 <body>
-  <h1>Cadastro de Usuário</h1>
+  <header>
+    <h1>Cadastro de Usuário</h1>
+  </header>
 
-  <form action="/user/signup" method="POST">
-    <label for="name">Nome:</label>
-    <input type="text" id="name" name="name" required>
+  <main>
+    
+    <form action="/user/signup" method="POST">
+      <h2>Cadastre-se já:</h2>
+      <label for="name">Como deseja ser chamado: <input type="text" id="name" name="name" required></label>
+      
 
-    <label for="email">E-mail:</label>
-    <input type="email" id="email" name="email" required>
+      <label for="email">E-mail: <input type="email" id="email" name="email" required></label>
+      
 
-    <label for="password">Senha:</label>
-    <input type="password" id="password" name="password" required>
+      <label for="password">Senha: <input type="password" id="password" name="password" required></label>
+      
 
-    <label for="confirmPassword">Confirmar Senha:</label>
-    <input type="password" id="confirmPassword" name="confirmPassword" required>
+      <label for="confirmPassword">Confirmar Senha: <input type="password" id="confirmPassword" name="confirmPassword" required></label>
+      
 
-    <input type="submit" value="Cadastrar">
-  </form>
+      <input type="submit" value="Cadastrar">
+    </form>
+  </main>
+  <footer>
+    <p>Rodapé</p>
+</footer>
 </body>
+
 </html>

@@ -5,50 +5,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
+    <link rel="stylesheet" href="/styles.css">
 
 <body>
 
     <body>
-        <h1>Detalhes do Horário</h1>
-        <div>
-            <p>O horário escolhido foi o das <span id="hora"></span> horas, você deve aparecer até as <span
-                    id="horamin"></span> para não perder a vaga</p>
-        </div>
-        <button id="reservarBtn">Reservar</button>
-
+        <header>
+            <h1>Horários para Hoje</h1>
+        </header>
+        <main id="timetable">
+            <div id="container">
+                <h2>O horário escolhido foi o das <b class="info"><span id="hora"></span> horas</b> no dia <span id="day"></span>, <b class="warning"> você deve
+                    aparecer até as <span id="horamin"></span> para não perder a vaga </b></h2>
+                <button id="reservarBtn">Reservar</button>
+            </div>
+        </main>
 
 
         <script>
             const urlParams = new URLSearchParams(window.location.search);
             const hour = urlParams.get('hour')
             const date = urlParams.get('date')
-
+            const a = date.split('-')
+            let y = a[0]
+            let d = a[2]
+            let m = a[1]
+            console.log(d, m, y)
             const reservarBtn = document.getElementById('reservarBtn');
             reservarBtn.addEventListener('click', reservarHorario);
+
+            const currentDate = new Date().toISOString().split('T')[0];
 
             const requestOptions = {
                 method: 'PUT'
             };
-            function reservarHorario() {
-                fetch(`/time/put/${date}/${hour}`, requestOptions).then(response => response.json())
+            async function reservarHorario() {
+                fetch(`/time/put/${date}/${hour}`, requestOptions)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro de requisição');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
-                        
+                        alert("Horario marcado com sucesso")
+                        window.location.href = '/'
                     })
                     .catch(error => {
+                        alert("Alguém já pegou esse horário, tente outro")
+                        window.history.back()
                         console.error('Erro ao efetuar reserva:', error);
                     });
-                    alert("Horário reservado com sucesso")
-                    window.location.href = '/timetable'
             }
 
             fetch(`/time/view/${date}/${hour}`)
                 .then(response => response.json())
                 .then(timeT => {
+                    console.log(date, currentDate)
+                    if (date < currentDate) {
+                        let div = document.querySelector('div#container')
+                        div.innerHTML = ""
+                        div.innerHTML = `
+                        <h2>Essa data já passou, informe um horário válido</h2>
+
+                        <a href='/fulltimetable'>Voltar</a>`
+                        return
+
+                    }
                     const hora = document.querySelector('span#hora')
                     const horamin = document.querySelector('span#horamin')
+                    const day = document.querySelector('span#day')
                     hora.textContent = timeT.time + ":00"
                     horamin.textContent = timeT.time + ":20"
+                    day.textContent = `${d}/${m.toString().padStart(2, '0')}/${y.toString().padStart(2, '0')}`
                 })
                 .catch(error => {
                     console.error('Erro ao carregar os horários:', error);

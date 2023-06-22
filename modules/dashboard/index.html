@@ -5,20 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
-    <h1>Página inicial</h1>
-    <div id="container">
-    </div>
-
+    <header>
+        <h1>Página Inicial</h1>
+        <div id="navcontainer">
+        </div>
+    </header>
+    <main>
+        <h2>API de agendamento de horários em salão</h2>
+    </main>
+    <footer>
+        <p>Rodapé</p>
+    </footer>
     <script>
         const checkAuth = async () => {
             try {
                 const response = await fetch('/user/checkAuth');
                 const data = await response.json();
 
-                const div = document.querySelector('div#container')
+                const div = document.querySelector('div#navcontainer')
                 // Verifica se o usuário está autenticado
                 if (data.isAuthenticated) {
                     // Se estiver autenticado, altera o conteúdo do navbar
@@ -27,13 +35,18 @@
                     <nav>
                         <ul>
                             <li>
-                                <a href='/timetable'>Ver horários</a>
+                                <a href='/timetable'>Ver horários do dia</a>
+                            </li>
+
+                            <li>
+                                <a href='/fulltimetable'>Agendar horário em outro dia</a>
                             </li>
                             <li>
                                 <a href='/user/logout'>Logout</a>
                             </li>
                         </ul>
                     </nav>
+                    
                     `
 
                 }
