@@ -1,16 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Tabela de Horários</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
   <header>
     <h1>Horários de hoje</h1>
+    <div id="navcontainer">
+      <nav>
+      <ul>
+        <li>
+          <a href="/">Tela Inicial</a>
+        </li>
+        <li>
+          <a href="/user/logout">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
   </header>
   <main>
     <table id="horariosTable" class="table">
@@ -69,7 +81,6 @@
           btn.addEventListener('click', () => {
             goToAgendamento(hour.time);
           });
-
           cellHour.textContent = hour.time + ":00"
           reserva.textContent = hour.user ? hour.user.name : 'N/A'
           cellBtn.appendChild(btn)

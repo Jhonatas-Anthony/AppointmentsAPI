@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login de Usuário</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -10,6 +12,15 @@
     <h1>
       Login de Usuário
     </h1>
+    <div id="navcontainer">
+      <nav>
+      <ul>
+        <li>
+          <a href="/">Tela Inicial</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
   </header>
   <main>
     
@@ -18,9 +29,11 @@
       <label for="email">E-mail: <input type="email" id="email" name="email" required></label>
 
       <label for="password">Senha: <input type="password" id="password" name="password" required></label>
-
+      <a href="signup">Não possui Login? Cadastre-se já!</a>
       <input type="submit" value="Entrar">
+      
     </form>
+    
   </main>
   <footer>
     <p>Rodapé</p>

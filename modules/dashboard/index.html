@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Página inicial</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 
@@ -14,8 +14,10 @@
         <div id="navcontainer">
         </div>
     </header>
-    <main>
-        <h2>API de agendamento de horários em salão</h2>
+    <main id="timetable">
+        <div id="container">
+            
+        </div>
     </main>
     <footer>
         <p>Rodapé</p>
@@ -27,6 +29,7 @@
                 const data = await response.json();
 
                 const div = document.querySelector('div#navcontainer')
+                const div2 = document.querySelector('div#container')
                 // Verifica se o usuário está autenticado
                 if (data.isAuthenticated) {
                     // Se estiver autenticado, altera o conteúdo do navbar
@@ -46,9 +49,10 @@
                             </li>
                         </ul>
                     </nav>
-                    
                     `
-
+                    div2.innerHTML = `
+                    <h2>Bem vindo <b class='info'>${data.user.name}</b>, esse é a sua API de agendamento de horários para salão.</h2>
+                    `
                 }
                 else {
                     div.innerHTML = `
@@ -63,6 +67,11 @@
                         </ul>
                     </nav>
                     `
+                    div2.innerHTML = `
+                    <h2>API de agendamentos de horário em salão:</h2>
+                    <h3>Logue-se já para reservar um horário</h3>
+                    `
+                    
                 }
             } catch (error) {
                 console.error(error);
