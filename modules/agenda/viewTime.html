@@ -13,16 +13,16 @@
     <h1>Horários de hoje</h1>
     <div id="navcontainer">
       <nav>
-      <ul>
-        <li>
-          <a href="/">Tela Inicial</a>
-        </li>
-        <li>
-          <a href="/user/logout">Logout</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
+        <ul>
+          <li>
+            <a href="/">Tela Inicial</a>
+          </li>
+          <li>
+            <a href="/user/logout">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </header>
   <main>
     <table id="horariosTable" class="table">
@@ -40,6 +40,23 @@
   </main>
 
   <script>
+    const time = new Date().toLocaleTimeString().split(':')[0]
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/user/checkAuth')
+        const data = await response.json()
+        if (data.isAuthenticated) {
+          return data.user._id
+        }
+        else resolve()
+      } catch (error) {
+        alert(error)
+        console.error(error);
+      }
+    }
+
+
     function goToAgendamento(hora) {
       const newDate = new Date
       const y = newDate.getFullYear()
@@ -65,17 +82,44 @@
           const row = document.createElement('tr')
           const cellHour = document.createElement('td')
           const cellBtn = document.createElement('td')
+          const textMessage = document.createElement('p')
           const btn = document.createElement('button')
-          btn.setAttribute('id', 'reservaBtn')
           const reserva = document.createElement('td')
 
-          btn.textContent = 'Reservar este horário'
           btn.addEventListener('click', () => {
             goToAgendamento(hour.time);
           });
           cellHour.textContent = hour.time + ":00"
           reserva.textContent = hour.user ? hour.user.name : 'N/A'
-          cellBtn.appendChild(btn)
+
+          checkAuth().then((valor) => {
+            if (hour.user !== null) {
+              if (hour.user._id === valor) {
+                btn.textContent = 'Editar Agendamento'
+                btn.setAttribute('class', 'editBtn')
+                cellBtn.appendChild(btn)
+              }
+              else {
+                textMessage.textContent = "Indisponível"
+                cellBtn.appendChild(textMessage)
+              }
+
+            }
+            else {
+              if (parseFloat(time) > hour.time) {
+                textMessage.textContent = "Indisponível"
+                cellBtn.appendChild(textMessage)
+              }
+              else {
+                btn.setAttribute('class', 'reservaBtn')
+                btn.textContent = 'Reservar este horário'
+                cellBtn.appendChild(btn)
+              }
+            }
+          })
+
+
+
 
           row.appendChild(cellHour)
           row.appendChild(reserva)
