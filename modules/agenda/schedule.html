@@ -47,6 +47,7 @@
                     console.error(error);
                 }
             } */
+            
             const urlParams = new URLSearchParams(window.location.search);
             const hour = urlParams.get('hour')
             const date = urlParams.get('date')
@@ -54,12 +55,13 @@
             let y = a[0]
             let d = a[2]
             let m = a[1]
-            console.log(d, m, y)
+
             const reservarBtn = document.getElementById('reservarBtn');
 
             reservarBtn.addEventListener('click', reservarHorario);
 
             const currentDate = new Date().toISOString().split('T')[0];
+            const time = new Date().toLocaleTimeString().split(':')[0]
 
             const requestOptions = {
                 method: 'PUT'
@@ -86,15 +88,16 @@
             fetch(`/time/view/${date}/${hour}`)
                 .then(response => response.json())
                 .then(timeT => {
+                    let div = document.querySelector('div#container')
+
                     if (date < currentDate) {
-                        let div = document.querySelector('div#container')
+                        
                         div.innerHTML = ""
                         div.innerHTML = `
-                        <h2>Essa data já passou, informe um horário válido</h2>
+                        <h2>Olá, parece que essa data ou horário já passou e ficou indisponível, faça um agendamento para amanhã!</h2>
 
                         <a href='/fulltimetable'>Voltar</a>`
                         return
-
                     }
                     const hora = document.querySelector('span#hora')
                     const horamin = document.querySelector('span#horamin')
