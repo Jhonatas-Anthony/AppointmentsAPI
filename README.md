@@ -43,11 +43,11 @@ Quando iniciar o projeto se dirija até a rota responsável por [popular](127.0.
 Aqui estão os dados dos usuários de teste: 
 | Email  | Senha |
 | ------------- | ------------- |
-|  jhonatas@gmail.com | 123   |
-| adm@gmail.com  | 123   |
-| sub@gmail.com  | 123   |
-| grosso@gmail.com  | 123   |
-| lex@gmail.com  | 123   |
+|  jhonatas@gmail.com | password   |
+| adm@gmail.com  | password   |
+| sub@gmail.com  | password   |
+| grosso@gmail.com  | password   |
+| lex@gmail.com  | password   |
 
 ---
 
@@ -74,7 +74,12 @@ Com tudo funcionando, preciso definir como funcionará a autenticação de usuá
 Para resolver essas questões estarei usando o cookie parser e o JsonWebToken(JWT), o JWT é usado para autenticação entre duas partes por meio de um token assinado que autentica uma requisição web. Esse token é um código em que armazena objetos JSON com os dados que permitem a autenticação da requisição. O Cookie parser vai salvar esse token no header do local storage. Então, se esse token existir, é por que existe alguém logado, quando o usuário clica em 'deslogar' o token é apagado, e dessa forma não tem como autenticar, logo o usuário é efetivamente deslogado e o sistema reconhece que não há ninguém logado. 
 
 ---
-# Problemas
+
+## Problemas enfrentados pelo dev
+Quando a aplicação chegou na  fase na qual eu julguei estar terminado, percebi que algumas coisas não se comportavam como devia, o controller de usuários para login e signup demorava entre 15 e 30 segundos para cadastrar um usuário ou autenticar o mesmo com o login. A partir disso eu vi que era um problema de desempenho e comecei a verificar as possíveis causas, o primeiro método que usei já me deu a resposta, soltei alguns console.log no código e com isso, vi que o bcrypt era a causa de todo essa lentidão, então, pesquisando na internet achei o argon2, outro método de hash de senha. Usando o argon2 consegui resolver esse problema de desempenho e agora a aplicação está mais usável. c
+
+---
+# Problemas enfrentados por quem vai testar o app
 
 1. Para conectar com o banco de dados
 Caso não consiga fazer a conexão com o banco de dados, dois problemas podem estar acontecendo, ou o docker não está funcionando corretamente (1.1), ou, se você já tem o driver do mongo e não usou o docker (1.2).
