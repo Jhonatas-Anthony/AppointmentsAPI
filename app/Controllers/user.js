@@ -1,9 +1,10 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const User = require('../Models/user');
 const jwt = require('jsonwebtoken');
+const argon2 = require('argon2');
 
 const userRouter = express.Router();
+
 const signToken = id => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
@@ -12,19 +13,23 @@ const signToken = id => {
 
 userRouter.post('/signup', async (req, res) => {
     try {
+        console.log('')
         const { name, email, password, confirmPassword } = req.body;
 
         if (password !== confirmPassword) {
-            return res.status(400).json({ message: 'As senhas não coincidem' });
+            return res.status(400).json('Senhas incompatíveis')
         }
+        console.log('senha testada')
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'Já existe um usuário com esse email' });
+            return res.status(400).json('Esse e-mail já está sendo usado')
         }
-
+        console.log('email testado')
+        
         // Criar um hash da senha antes de salvar no banco de dados
-        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SEED));
+        //const hashedPassword = await bcrypt.hash(password, 101);
+        const hashedPassword = await argon2.hash(password, process.env.BCRYPT_SEED);
 
         const newUser = new User({
             name,
@@ -33,11 +38,11 @@ userRouter.post('/signup', async (req, res) => {
         });
 
         await newUser.save();
+        res.status(201).redirect('/')
 
-        res.status(201).redirect('/login');
     } catch (error) {
-        //console.error(error);
-        res.status(500).json({ message: 'Erro ao cadastrar o usuário' });
+        console.error(error);
+        res.status(500).json({ message: 'Ops, algo de inesperado aconteceu' });
     }
 });
 
@@ -50,17 +55,17 @@ userRouter.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Email inválido' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await argon2.verify(user.password, password);
         if (!isPasswordValid) {
             return res.status(400).json({ message: 'Senha incorreta' });
         }
 
         const token = signToken(user._id)
         res.cookie('token', token, { httpOnly: true });
-        res.status(200).redirect('/');
+        res.status(200).redirect('/')
 
     } catch (error) {
-        //console.error(error);
+        console.error(error);
         res.status(500).json({ message: 'Erro ao realizar o login' });
     }
 });
@@ -86,9 +91,10 @@ userRouter.get('/checkAuth', async (req, res) => {
         try {
             // Verifica se o token é válido
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const userPromise = User.findById(decoded.id)
 
             // Verifica se o usuário existe no banco de dados
-            const user = await User.findById(decoded.id);
+            const [user] = await Promise.all([userPromise]);;
             if (!user) {
                 // Se o usuário não existir
                 return res.json({ isAuthenticated: false });
@@ -105,20 +111,19 @@ userRouter.get('/checkAuth', async (req, res) => {
     }
 });
 
-//Rota para popular o banco com usuários teste
 userRouter.get('/populate', async (req, res) => {
     const data = [
-        { name: 'Jhonatas Anthony', email: 'jhonatas@gmail.com', password: await bcrypt.hash('123', 10) },
-        { name: 'Garrincha Medeiros', email: 'adm@gmail.com', password: await bcrypt.hash('123', 10) },
-        { name: 'Lucca Tattine', email: 'sub@gmail.com', password: await bcrypt.hash('123', 10) },
-        { name: 'Caruso Ignácio', email: 'grosso@gmail.com', password: await bcrypt.hash('123', 10) },
-        { name: 'Lilian Carol', email: 'lex@gmail.com', password: await bcrypt.hash('123', 10) }
+        { name: 'Jhonatas Anthony', email: 'jhonatas@gmail.com', password: await argon2.hash('password', process.env.BCRYPT_SEED) },
+        { name: 'Garrincha Medeiros', email: 'adm@gmail.com', password: await argon2.hash('password', process.env.BCRYPT_SEED) },
+        { name: 'Lucca Tattine', email: 'sub@gmail.com', password: await argon2.hash('password', process.env.BCRYPT_SEED) },
+        { name: 'Caruso Ignácio', email: 'grosso@gmail.com', password: await argon2.hash('password', process.env.BCRYPT_SEED) },
+        { name: 'Lilian Carol', email: 'lex@gmail.com', password: await argon2.hash('password', process.env.BCRYPT_SEED) }
     ]
     try {
         const users = await User.insertMany(data)
         res.status(200).json({ message: 'banco populado com sucesso', users });
     } catch (error) {
-        //console.error(error);
+        console.error(error);
         res.status(500).json({ message: 'Erro ao popular banco' })
     }
 })
