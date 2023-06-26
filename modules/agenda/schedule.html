@@ -1,28 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Reserva</title>
     <link rel="stylesheet" href="/styles.css">
 
 <body>
 
     <body>
         <header>
-            <h1>Horários para Hoje</h1>
+            <h1>Agendar</h1>
+            <div id="navcontainer">
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="/">Tela Inicial</a>
+                        </li>
+                        <li>
+                            <a href="/user/logout">Logout</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </header>
         <main id="timetable">
             <div id="container">
-                <h2>O horário escolhido foi o das <b class="info"><span id="hora"></span> horas</b> no dia <span id="day"></span>, <b class="warning"> você deve
-                    aparecer até as <span id="horamin"></span> para não perder a vaga </b></h2>
-                <button id="reservarBtn">Reservar</button>
+                <h2>O horário escolhido foi o das <b class="info"><span id="hora"></span> horas</b> no dia <span
+                        id="day"></span>, <b class="warning"> você deve
+                        aparecer até as <span id="horamin"></span> para não perder a vaga </b></h2>
+                <div id="btncontainer"><button id="reservarBtn">Reservar</button></div>
+
             </div>
         </main>
-
-
         <script>
+            /* const checkAuth = async () => {
+                try {
+                    const response = await fetch('/user/checkAuth')
+                    const data = await response.json()
+                    if (data.isAuthenticated) {
+                        return await data.user._id
+                    }
+                    else resolve()
+                } catch (error) {
+                    console.error(error);
+                }
+            } */
+            
             const urlParams = new URLSearchParams(window.location.search);
             const hour = urlParams.get('hour')
             const date = urlParams.get('date')
@@ -30,11 +55,13 @@
             let y = a[0]
             let d = a[2]
             let m = a[1]
-            console.log(d, m, y)
+
             const reservarBtn = document.getElementById('reservarBtn');
+
             reservarBtn.addEventListener('click', reservarHorario);
 
             const currentDate = new Date().toISOString().split('T')[0];
+            const time = new Date().toLocaleTimeString().split(':')[0]
 
             const requestOptions = {
                 method: 'PUT'
@@ -61,27 +88,58 @@
             fetch(`/time/view/${date}/${hour}`)
                 .then(response => response.json())
                 .then(timeT => {
-                    console.log(date, currentDate)
+                    let div = document.querySelector('div#container')
+
                     if (date < currentDate) {
-                        let div = document.querySelector('div#container')
+                        
                         div.innerHTML = ""
                         div.innerHTML = `
-                        <h2>Essa data já passou, informe um horário válido</h2>
+                        <h2>Olá, parece que essa data ou horário já passou e ficou indisponível, faça um agendamento para amanhã!</h2>
 
                         <a href='/fulltimetable'>Voltar</a>`
                         return
-
                     }
                     const hora = document.querySelector('span#hora')
                     const horamin = document.querySelector('span#horamin')
                     const day = document.querySelector('span#day')
+                    const btncontainer = document.querySelector('div#btncontainer')
                     hora.textContent = timeT.time + ":00"
                     horamin.textContent = timeT.time + ":20"
                     day.textContent = `${d}/${m.toString().padStart(2, '0')}/${y.toString().padStart(2, '0')}`
+                    /* checkAuth().then((valor) => {
+                        if (timeT.user === valor) {
+                            btncontainer.innerHTML = `
+                            <button id="desreservarBtn">Desreservar</button>
+                            `
+                        }
+                        const btnremove = document.querySelector('button#desreservarBtn')
+                        btnremove.addEventListener('click', () => {
+                            desreservar()
+                        })
+                    }) */
+
                 })
                 .catch(error => {
                     console.error('Erro ao carregar os horários:', error);
                 })
+
+            async function desreservar() {
+                fetch('/time/reset/${date}/${hour}', requestOptions)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro de requisição');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert("Horário desmarcado")
+                        //window.location.href = '/'
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        //window.history.back()
+                    });
+            }
         </script>
     </body>
 
