@@ -1,4 +1,4 @@
-# BeautySalonAPI
+# AppoinmentsAPI
 
 O intuito deste projeto é criar uma API de agendamento de horários para um salão, onde o usuário vai poder escolher o horário que quiser dentre os disponíveis. 
 

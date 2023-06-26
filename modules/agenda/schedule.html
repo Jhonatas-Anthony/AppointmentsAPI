@@ -2,145 +2,155 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserva</title>
+  <link rel="stylesheet" href="/styles.css">
 
 <body>
 
-    <body>
-        <header>
-            <h1>Agendar</h1>
-            <div id="navcontainer">
-                <nav>
-                    <ul>
-                        <li>
-                            <a href="/">Tela Inicial</a>
-                        </li>
-                        <li>
-                            <a href="/user/logout">Logout</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-        <main id="timetable">
-            <div id="container">
-                <h2>O horário escolhido foi o das <b class="info"><span id="hora"></span> horas</b> no dia <span
-                        id="day"></span>, <b class="warning"> você deve
-                        aparecer até as <span id="horamin"></span> para não perder a vaga </b></h2>
-                <div id="btncontainer"><button id="reservarBtn">Reservar</button></div>
+  <body>
+    <header>
+      <h1>Agendar</h1>
+      <div id="navcontainer">
+        <nav>
+          <ul>
+            <li>
+              <a href="/">Tela Inicial</a>
+            </li>
+            <li>
+              <a href="/user/logout">Logout</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main id="timetable">
+      <div id="container">
+        <h2>O horário escolhido foi o das <b class="info"><span id="hora"></span> horas</b> no dia <span
+            id="day"></span>, <b class="warning"> você deve
+            aparecer até as <span id="horamin"></span> para não perder a vaga </b></h2>
+        <div id="btncontainer"><button id="reservarBtn">Reservar</button></div>
 
-            </div>
-        </main>
-        <script>
-            /* const checkAuth = async () => {
-                try {
-                    const response = await fetch('/user/checkAuth')
-                    const data = await response.json()
-                    if (data.isAuthenticated) {
-                        return await data.user._id
-                    }
-                    else resolve()
-                } catch (error) {
-                    console.error(error);
-                }
-            } */
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const hour = urlParams.get('hour')
-            const date = urlParams.get('date')
-            const a = date.split('-')
-            let y = a[0]
-            let d = a[2]
-            let m = a[1]
+      </div>
+    </main>
+    <script>
+      const checkAuth = async () => {
+        try {
+          const response = await fetch('/user/checkAuth')
+          const data = await response.json()
+          if (data.isAuthenticated) {
+            return data.user._id
+          }
+          else resolve()
+        } catch (error) {
+          alert(error)
+          console.error(error);
+        }
+      }
 
-            const reservarBtn = document.getElementById('reservarBtn');
 
-            reservarBtn.addEventListener('click', reservarHorario);
+      const urlParams = new URLSearchParams(window.location.search);
+      const hour = urlParams.get('hour')
+      const date = urlParams.get('date')
+      const a = date.split('-')
+      let y = a[0]
+      let d = a[2]
+      let m = a[1]
 
-            const currentDate = new Date().toISOString().split('T')[0];
-            const time = new Date().toLocaleTimeString().split(':')[0]
+      const reservarBtn = document.getElementById('reservarBtn');
 
-            const requestOptions = {
-                method: 'PUT'
-            };
-            async function reservarHorario() {
-                fetch(`/time/put/${date}/${hour}`, requestOptions)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erro de requisição');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert("Horario marcado com sucesso")
-                        window.location.href = '/'
-                    })
-                    .catch(error => {
-                        alert("Alguém já pegou esse horário, tente outro")
-                        window.history.back()
-                        console.error('Erro ao efetuar reserva:', error);
-                    });
+      reservarBtn.addEventListener('click', reservarHorario);
+
+      /* const currentDate = new Date().toISOString().split('T')[0];
+      const time = new Date().toLocaleTimeString().split(':')[0] */
+      const newDate = new Date();
+      const year = newDate.getFullYear();
+      const month = (newDate.getMonth() + 1).toString().padStart(2, '0');
+      const day = newDate.getDate().toString().padStart(2, '0');
+      const currentDate = `${year}-${month}-${day}`;
+
+      const putOptions = {
+        method: 'PUT'
+      };
+
+      const deleteOptions = {
+        method: 'DELETE'
+      }
+      async function reservarHorario() {
+        fetch(`/time/put/${date}/${hour}`, putOptions)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Erro de requisição');
             }
+            return response.json();
+          })
+          .then(data => {
+            alert("Horario marcado com sucesso")
+            window.location.href = '/'
+          })
+          .catch(error => {
+            alert("Alguém já pegou esse horário, tente outro")
+            window.history.back()
+            console.error('Erro ao efetuar reserva:', error);
+          });
+      }
 
-            fetch(`/time/view/${date}/${hour}`)
-                .then(response => response.json())
-                .then(timeT => {
-                    let div = document.querySelector('div#container')
+      async function cancel() {
+        fetch(`/time/cancel/${date}/${hour}`, putOptions)
+          .then(response => {
+            return response.json();
+          })
+          .then(data => {
+            alert("Horario desmarcado")
+            window.location.href = '/timetable'
+          })
+          .catch(error => {
+            alert(error)
+            window.history.back()
+            console.error('Erro ao efetuar reserva:', error);
+          });
+      }
 
-                    if (date < currentDate) {
-                        
-                        div.innerHTML = ""
-                        div.innerHTML = `
-                        <h2>Olá, parece que essa data ou horário já passou e ficou indisponível, faça um agendamento para amanhã!</h2>
+      fetch(`/time/view/${date}/${hour}`)
+        .then(response => response.json())
+        .then(timeT => {
+          //let authUser = checkAuth()
+          let div = document.querySelector('div#container')
+          if (date < currentDate) {
+
+            div.innerHTML = ""
+            div.innerHTML = `
+                        <h2>Olá, parece que essa data e ficou indisponível, faça um agendamento para amanhã!</h2>
 
                         <a href='/fulltimetable'>Voltar</a>`
-                        return
-                    }
-                    const hora = document.querySelector('span#hora')
-                    const horamin = document.querySelector('span#horamin')
-                    const day = document.querySelector('span#day')
-                    const btncontainer = document.querySelector('div#btncontainer')
-                    hora.textContent = timeT.time + ":00"
-                    horamin.textContent = timeT.time + ":20"
-                    day.textContent = `${d}/${m.toString().padStart(2, '0')}/${y.toString().padStart(2, '0')}`
-                    /* checkAuth().then((valor) => {
-                        if (timeT.user === valor) {
-                            btncontainer.innerHTML = `
-                            <button id="desreservarBtn">Desreservar</button>
+            return
+          }
+          const hora = document.querySelector('span#hora')
+          const horamin = document.querySelector('span#horamin')
+          const day = document.querySelector('span#day')
+          const btncontainer = document.querySelector('div#btncontainer')
+          hora.textContent = timeT.time + ":00"
+          horamin.textContent = timeT.time + ":20"
+          day.textContent = `${d}/${m.toString().padStart(2, '0')}/${y.toString().padStart(2, '0')}`
+
+          checkAuth().then((valor) => {
+            console.log(timeT.user, valor)
+            if (timeT.user === valor) {
+              btncontainer.innerHTML = `
+                            <button id="desreservarBtn">Desmarcar Agendamento</button>
                             `
-                        }
-                        const btnremove = document.querySelector('button#desreservarBtn')
-                        btnremove.addEventListener('click', () => {
-                            desreservar()
-                        })
-                    }) */
-
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar os horários:', error);
-                })
-
-            async function desreservar() {
-                fetch('/time/reset/${date}/${hour}', requestOptions)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erro de requisição');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert("Horário desmarcado")
-                        //window.location.href = '/'
-                    })
-                    .catch(error => {
-                        console.log(error)
-                        //window.history.back()
-                    });
+              const btnremove = document.querySelector('button#desreservarBtn')
+              btnremove.addEventListener('click', () => {
+                cancel()
+              })
             }
-        </script>
-    </body>
+          })
+        })
+        .catch(error => {
+          console.error('Erro ao carregar os horários:', error);
+        })
+    </script>
+  </body>
 
 </html>

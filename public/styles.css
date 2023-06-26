@@ -149,7 +149,6 @@ b.warning{
         border: none;
         width: 30%;
         min-width: 180px;
-        height: 1.8rem;
         border-radius: 5px;
         background-color: rgb(146, 157, 207);
     }
@@ -170,10 +169,18 @@ b.warning{
         font-size: 1.3rem;
     }
 
-    button#reservaBtn{
+    button.reservaBtn{
         padding: 5px 10px;
         font-size: 1rem;
         background-color:  rgb(146, 157, 207);
+        border: none;
+        align-self: flex-start;
+        border-radius: 5px;
+    }
+    button.editBtn{
+        padding: 5px 10px;
+        font-size: 1rem;
+        background-color:  rgb(138, 182, 72);
         border: none;
         align-self: flex-start;
         border-radius: 5px;

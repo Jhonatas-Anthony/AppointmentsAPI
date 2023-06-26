@@ -2,143 +2,185 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabelaa de Horários</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabelaa de Horários</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
-    <header>
-        <h1>Horários pré agendados</h1>
-        <div id="navcontainer">
-            <nav>
-            <ul>
-              <li>
-                <a href="/">Tela Inicial</a>
-              </li>
-              <li>
-                <a href="/user/logout">Logout</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        
-    </header>
-    <main>
-        <div id="chosedate">
-            <label id="chosedatelbl">Escolha o dia para visualizar as datas: </label>
-            <div>
-               <input type="date" id="date">
-                <button id="view">Ver</button> 
-            </div>
+  <header>
+    <h1>Horários pré agendados</h1>
+    <div id="navcontainer">
+      <nav>
+        <ul>
+          <li>
+            <a href="/">Tela Inicial</a>
+          </li>
+          <li>
+            <a href="/user/logout">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+  </header>
+  <main>
+    <div id="chosedate">
+      <label id="chosedatelbl">Escolha o dia para visualizar as datas: </label>
+      <div>
+        <input type="date" id="date">
+        <button id="view">Ver</button>
+      </div>
+
+    </div>
+    <table id="horariosTable" class="table">
+      <thead>
+        <tr>
+          <th>Dia</th>
+          <th>Hora</th>
+          <th>Reservado por</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+
+    const time = new Date().toLocaleTimeString().split(':')[0]
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/user/checkAuth')
+        const data = await response.json()
+        if (data.isAuthenticated) {
+          return data.user._id
+        }
+        else resolve()
+      } catch (error) {
+        alert(error)
+        console.error(error);
+      }
+    }
+
+    const dataInp = document.querySelector('input#date')
+    const dataToday = new Date().toISOString().split('T')[0]
+
+    const btn = document.querySelector('button#view')
+
+    const tbody = document.querySelector('tbody')
+
+
+    btn.addEventListener('click', () => {
+      viewSchedule()
+    })
+
+    dataInp.addEventListener('change', () => {
+      viewSchedule()
+    })
+    function goToAgendamento(hora) {
+      let data = dataInp.value
+      if (dataInp.value === '' || dataInp.value === dataToday) {
+        data = dataToday
+      }
+      data.split('-')
+      console.log(data)
+      let y = data[0]
+      let m = data[1].toString().padStart(2, '0')
+      let d = data[2].toString().padStart(2, '0')
+      window.location.href = `/schedule?date=${data}&hour=${hora}`;
+    }
+
+    async function createSchedule() {
+      const data = dataInp.value
+      fetch(`/time/show/${data}`)
+        .then(response => response.json())
+        .then(timeT => {
+
+          timeT.forEach(hour => {
+            const row = document.createElement('tr')
+            const cellHour = document.createElement('td')
+            const cellDate = document.createElement('td')
+            const cellBtn = document.createElement('td')
+            const btn = document.createElement('button')
+            const reserva = document.createElement('td')
+            const textMessage = document.createElement('p')
+            let d = dataInp.value.split('-')
+
+            checkAuth().then((valor) => {
+              if (hour.user !== null) {
+                if (hour.user._id === valor) {
+                  btn.textContent = 'Editar Agendamento'
+                  btn.setAttribute('class', 'editBtn')
+                  cellBtn.appendChild(btn)
+                }
+                else {
+                  textMessage.textContent = "Indisponível"
+                  cellBtn.appendChild(textMessage)
+                }
+
+              }
+              else {
+                if(dataInp.value < dataToday){
+                  textMessage.textContent = "Indisponível"
+                  cellBtn.appendChild(textMessage)
+                }
+                else if (parseFloat(time) > hour.time && (dataInp.value === '' || dataInp.value === dataToday)) {
+                  textMessage.textContent = "Indisponível"
+                  cellBtn.appendChild(textMessage)
+                }
+                else {
+                  btn.setAttribute('class', 'reservaBtn')
+                  btn.textContent = 'Reservar este horário'
+                  cellBtn.appendChild(btn)
+                }
+              }
+            })
+
+            btn.addEventListener('click', () => {
+              goToAgendamento(hour.time);
+            });
             
-        </div>
-        <table id="horariosTable" class="table">
-            <thead>
-                <tr>
-                    <th>Dia</th>
-                    <th>Hora</th>
-                    <th>Reservado por</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-        </table>
-    </main>
-
-    <script>
-        /* let dat = document.querySelector('input#da')
-        let but = document.querySelector('button#ver')
-        but.addEventListener('click', () => {
-          console.log(dat.value)
-        }); */
-        const dataInp = document.querySelector('input#date')
-        const dataToday = new Date().toISOString().split('T')[0]
-
-        const btn = document.querySelector('button#view')
-
-        const tbody = document.querySelector('tbody')
-
-
-        btn.addEventListener('click', () => {
-            viewSchedule()
-        })
-
-        dataInp.addEventListener('change', () => {
-            viewSchedule()
-        })
-        function goToAgendamento(hora) {
-            let data = dataInp.value
+            
+            cellHour.textContent = hour.time + ":00"
+            reserva.textContent = hour.user ? hour.user.name : 'N/A'
             if (dataInp.value === '' || dataInp.value === dataToday) {
-                data = dataToday
+              cellDate.textContent = "Hoje"
             }
-            data.split('-')
-            console.log(data)
-            let y = data[0]
-            let m = data[1].toString().padStart(2, '0')
-            let d = data[2].toString().padStart(2, '0')
-            window.location.href = `/schedule?date=${data}&hour=${hora}`;
-        }
+            else {
+              cellDate.textContent = `${d[2]}/${d[1]}/${d[0]}`
+            }
+            cellBtn.appendChild(btn)
+            row.appendChild(cellDate)
+            row.appendChild(cellHour)
+            row.appendChild(reserva)
+            row.appendChild(cellBtn)
 
-        async function createSchedule() {
-            const data = dataInp.value
-            fetch(`/time/show/${data}`)
-                .then(response => response.json())
-                .then(timeT => {
+            tbody.appendChild(row)
+          });
+        })
+    }
 
-                    timeT.forEach(hour => {
-                        const row = document.createElement('tr')
-                        const cellHour = document.createElement('td')
-                        const cellDate = document.createElement('td')
-                        const cellBtn = document.createElement('td')
-                        const btn = document.createElement('button')
-                        const reserva = document.createElement('td')
+    async function viewSchedule() {
+      const data = dataInp.value
 
+      fetch(`/time/createMany/${data}`)
+        .then(response => response.json())
+        .then(timeT => {
 
-                        btn.textContent = 'Reservar este horário'
-                        btn.addEventListener('click', () => {
-                            goToAgendamento(hour.time);
-                        });
-                        btn.setAttribute('id', 'reservaBtn')
-                        let d = dataInp.value.split('-')
-                        cellHour.textContent = hour.time + ":00"
-                        reserva.textContent = hour.user ? hour.user.name : 'N/A'
-                        if (dataInp.value === '' || dataInp.value === dataToday) {
-                            cellDate.textContent = "Hoje"
-                        }
-                        else {
-                            cellDate.textContent = `${d[2]}/${d[1]}/${d[0]}`
-                        }
-                        cellBtn.appendChild(btn)
-                        row.appendChild(cellDate)
-                        row.appendChild(cellHour)
-                        row.appendChild(reserva)
-                        row.appendChild(cellBtn)
-
-                        tbody.appendChild(row)
-                    });
-                })
-        }
-
-        async function viewSchedule() {
-            const data = dataInp.value
-
-            fetch(`/time/createMany/${data}`)
-                .then(response => response.json())
-                .then(timeT => {
-
-                }).catch(error => {
-                    console.error('Erro ao carregar os horários:', error);
-                });
-            tbody.innerHTML = ""
-            createSchedule()
-        }
+        }).catch(error => {
+          console.error('Erro ao carregar os horários:', error);
+        });
+      tbody.innerHTML = ""
+      createSchedule()
+    }
 
 
-    </script>
+  </script>
 </body>
 
 </html>
