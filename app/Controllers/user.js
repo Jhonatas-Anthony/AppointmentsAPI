@@ -13,22 +13,18 @@ const signToken = id => {
 
 userRouter.post('/signup', async (req, res) => {
     try {
-        console.log('')
         const { name, email, password, confirmPassword } = req.body;
 
         if (password !== confirmPassword) {
             return res.status(400).json('Senhas incompatíveis')
         }
-        console.log('senha testada')
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json('Esse e-mail já está sendo usado')
         }
-        console.log('email testado')
         
         // Criar um hash da senha antes de salvar no banco de dados
-        //const hashedPassword = await bcrypt.hash(password, 101);
         const hashedPassword = await argon2.hash(password, process.env.BCRYPT_SEED);
 
         const newUser = new User({
@@ -38,7 +34,7 @@ userRouter.post('/signup', async (req, res) => {
         });
 
         await newUser.save();
-        res.status(201).redirect('/')
+        res.status(201).redirect('/login')
 
     } catch (error) {
         console.error(error);
