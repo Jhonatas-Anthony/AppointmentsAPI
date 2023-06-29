@@ -88,7 +88,7 @@ Caso não consiga fazer a conexão com o banco de dados, dois problemas podem es
 
     1.1. Nesse caso, o problema pode está na má instalação/configuração do docker na sua máquina local, ou no arquiv mongo, se for esse segundo caso é fácil de resolver, entre nesse arquivo e cópie o código da linha 16, cole no terminei e execute, e depois faça o mesmo com o código da linha 6.
 
-    1.2 Infelizmente, nesse caso não tem muito o que fazer, esse projeto foi configurado para funcionar na versão 4.0 do mongodb e pode existir um problema de compatibilidade.
+    1.2 Infelizmente, nesse caso não tem muito o que fazer, esse projeto foi configurado para funcionar na versão 4.0 do mongodb e pode existir um problema de compatibilidade. Porém, uma possível solução é parar o serviço do mongo rodando, e fazer o procedimento do docker, usando uma imagem, depois parar container quando terminar. Ao reiniciar o computador, por padrão, o driver do mongo vai voltar a rodar automaticamente, ou, invés de reiniciar, pode-se ativá-lo manualmente após parar o container.
 
 
 
