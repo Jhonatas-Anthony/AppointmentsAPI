@@ -30,6 +30,8 @@ Para não precisar instalar os drivers do mongo na máquina, usarei o docker par
 Antes de tudo, baixe as dependências com ```npm install```.
 Se você já tiver no seu computador o driver do mongo rodando, pode pular essa parte. Se não tiver, entre no diretório ".docker", e dê as permissões para o arquivo mongo - ```chmod 777 mongo```.
 
+Para baixar a imagem do mongo use: ```./mongo```.
+
 Para iniciar o driver do mongo use: ```./mongo start```.
 
 Para parar o driver do mongo use: ```./mongo stop```.
