@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Horários</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>Horários de hoje</h1>
+    <div id="navcontainer">
+      <nav>
+        <ul>
+          <li>
+            <a href="/">Tela Inicial</a>
+          </li>
+          <li>
+            <a href="/user/logout">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <table id="horariosTable" class="table">
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Reservado por</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- As linhas dos horários serão adicionadas dinamicamente usando JavaScript -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    const time = new Date().toLocaleTimeString().split(':')[0]
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/user/checkAuth')
+        const data = await response.json()
+        if (data.isAuthenticated) {
+          return data.user.id
+        }
+        else resolve()
+      } catch (error) {
+        alert(error)
+        console.error(error);
+      }
+    }
+
+
+    function goToAgendamento(hora) {
+      const newDate = new Date
+      const y = newDate.getFullYear()
+      const m = newDate.getMonth() + 1
+      const d = newDate.getDate()
+      const today = `${y}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`
+      // Redirecionar para a tela de agendamento, passando o horário como parâmetro
+      window.location.href = `/schedule?date=${today}&hour=${hora}`;
+    }
+
+    fetch('/time/createMany')
+      .then(response => response.json())
+      .then(timeT => {
+      }).catch(error => {
+        console.error('Erro ao carregar os horários:', error);
+      });
+
+    fetch('/time/show')
+      .then(response => response.json())
+      .then(timeT => {
+        const tbody = document.querySelector('tbody')
+        timeT.forEach(hour => {
+          const row = document.createElement('tr')
+          const cellHour = document.createElement('td')
+          const cellBtn = document.createElement('td')
+          const textMessage = document.createElement('p')
+          const btn = document.createElement('button')
+          const reserva = document.createElement('td')
+
+          btn.addEventListener('click', () => {
+            goToAgendamento(hour.time);
+          });
+          if (hour.userId !== null) {
+            const response = fetch(`/user/view/${hour.userId}`)
+            .then(response => response.json())
+            .then(user => {reserva.textContent = user})
+            //const data = response.json()
+            //reserva.textContent = response
+          }
+          else {
+            reserva.textContent = 'N/A'
+          }
+          cellHour.textContent = hour.time + ":00"
+
+
+
+          checkAuth().then((valor) => {
+            if (hour.userId !== null) {
+              if (hour.userId === valor) {
+                btn.textContent = 'Editar Agendamento'
+                btn.setAttribute('class', 'editBtn')
+                cellBtn.appendChild(btn)
+              }
+              else {
+                textMessage.textContent = "Indisponível"
+                cellBtn.appendChild(textMessage)
+              }
+
+            }
+            else {
+              if (parseFloat(time) > hour.time) {
+                textMessage.textContent = "Indisponível"
+                cellBtn.appendChild(textMessage)
+              }
+              else {
+                btn.setAttribute('class', 'reservaBtn')
+                btn.textContent = 'Reservar este horário'
+                cellBtn.appendChild(btn)
+              }
+            }
+          })
+
+          row.appendChild(cellHour)
+          row.appendChild(reserva)
+          row.appendChild(cellBtn)
+
+          tbody.appendChild(row)
+        });
+      })
+
+
+  </script>
+</body>
+
+</html>

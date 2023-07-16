@@ -2,6 +2,12 @@
 
 O intuito deste projeto é criar uma API de agendamento de horários para um salão, onde o usuário vai poder escolher o horário que quiser dentre os disponíveis. 
 
+---
+## Aviso
+
+A maioria das informações aqui está para quem vai usar a aplicação com MONGO, se  for usar com SQL veja o about.md dentro da pasta APIWithSQL
+---
+
 ## Documentação
 
 Irei descrever o processo de criação deste projeto, como usar, e alguns detalhes que foram pensados durante a produção.

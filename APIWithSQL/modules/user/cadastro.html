@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Usuário</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>Cadastro de Usuário</h1>
+    <div id="navcontainer">
+      <nav>
+      <ul>
+        <li>
+          <a href="/">Tela Inicial</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  </header>
+  <main>
+    <form action="/user/signup" method="POST">
+      <h2>Cadastre-se já:</h2>
+      <label for="name">Como deseja ser chamado: <input type="text" id="name" name="name" required></label>
+      
+      <label for="email">E-mail: <input type="email" id="email" name="email" required></label>
+
+      <label for="password">Senha: <input type="password" id="password" name="password" required></label>
+      
+      <label for="confirmPassword">Confirmar Senha: <input type="password" id="confirmPassword" name="confirmPassword" required></label>
+      
+      <a href="login">Já possui Cadastro? Logue-se já!</a>
+
+      <input type="submit" value="Cadastrar">
+    </form>
+  </main>
+</body>
+
+</html>
